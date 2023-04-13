@@ -3,7 +3,7 @@ import {
     PORT
 } from './utils/config';
 
-const server = app.listen(PORT, () => {
+const server = app.listen(parseInt(PORT), () => {
     console.log("\x1b[34m", `Listening on port ${PORT}`, "\x1b[37m");
 });
 
