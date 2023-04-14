@@ -14,26 +14,31 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-const walkSync = async(dir: string, filePath: string) => {
-    const basePass = path.join(__dirname, 'routes', dir);
-    const files = fs.readdirSync(basePass);
+export const walkSync = async(dir: string) => {
+    // getting the directory path to read the files from `routes` folder
+    const basePath = path.join(__dirname, 'routes', dir);
+    // reads all the files and directories from the `routes` folder
+    const files = fs.readdirSync(basePath);
+    
     for(let i = 0; i < files.length; i++) {
         const file = files[i];
-        const fsStat = fs.statSync(path.join(basePass, file));
+        const fsStat = fs.statSync(path.join(basePath, file));
+
+        // checks if the current instance is a file
         if (fsStat.isFile()) {
-            const routeData: Routes = (await import(path.join(basePass, file))).default;
+            const routeData: Routes = (await import(path.join(basePath, file))).default;
+            const pathSetter = path.join('/', `${basePath.substring(path.join(__dirname, 'routes').length)}`);
             if (routeData.auth) {
-                app[routeData.method](path.join('/', filePath), routeData.auth, routeData.handler);
+                // we are doing folder based routing
+                app[routeData.method](pathSetter, routeData.auth, routeData.handler);
             } else {
-                app[routeData.method](path.join('/', filePath), routeData.handler);
+                app[routeData.method](pathSetter, routeData.handler);
             }
         } else if (fsStat.isDirectory()) {
-            await walkSync(path.join(dir, file), file);
+            await walkSync(path.join(dir, file));
         }
     }
 }
-
-walkSync('', '');
 
 export default app;
 
