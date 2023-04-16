@@ -27,7 +27,7 @@ export const walkSync = async(dir: string) => {
         // checks if the current instance is a file
         if (fsStat.isFile()) {
             const routeData: Routes = (await import(path.join(basePath, file))).default;
-            const pathSetter = path.join('/', `${basePath.substring(path.join(__dirname, 'routes').length)}`);
+            const pathSetter = path.join('/', `${basePath.substring(path.join(__dirname, 'routes').length)}`, routeData.extended??'');
             if (routeData.auth) {
                 // we are doing folder based routing
                 app[routeData.method](pathSetter, routeData.auth, routeData.handler);

@@ -1,8 +1,12 @@
 import express from 'express';
-import Methods from './../utils/methodEnums';
+import {
+    Extended,
+    Methods
+} from './method';
 
 export default interface Routes {
-    method: keyof typeof Methods;
+    method: Methods;
+    extended?: Extended;
     auth?: (req: express.Request, res: express.Response, next: express.NextFunction) => void;
     handler: (req: express.Request, res: express.Response, next?: express.NextFunction) => void;
 }
